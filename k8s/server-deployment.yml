@@ -1,0 +1,45 @@
+# тип объекта
+apiVersion: apps/v1
+kind: Deployment
+# просто название объекта
+metadata:
+  name: server-deployment
+# описание объекта
+spec:
+  replicas: 3
+  # вбираем описываем в template под
+  selector:
+    matchLabels:
+      component: server
+  # описываем шаблон создания пода
+  template:
+    # вешаем на него лейбл, чтобы деплоймент смог его найти по формуле выше
+    metadata:
+      labels:
+        component: server
+    # описание объект пода создаваемый шаблоном
+    spec:
+      containers:
+        - name: server
+          image: moon2k/complex-server
+          ports:
+            - containerPort: 5000
+          env:
+            - name: REDIS_HOST
+              value: redis-cluster-ip-service
+            - name: REDIS_PORT
+              value: '6379'
+            - name: PGHOST
+              value: postgres-cluster-ip-service
+            - name: PGPORT
+              value: '5432'
+            - name: PGUSER
+              value: postgres
+            - name: PGDATABASE
+              value: postgres
+            - name: PGPASSWORD
+              # значение берем из секрета по хранимому в нем ключу
+              valueFrom:
+                secretKeyRef:
+                  name: pgpassword
+                  key: POSTGRES_PASSWORD
