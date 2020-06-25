@@ -1,0 +1,40 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: postgres-deployment-service
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      component: postgres
+  template:
+    metadata:
+      labels:
+        component: postgres
+    spec:
+      # запрашиваем место
+      volumes:
+        - name: postgres-storage
+          persistentVolumeClaim:
+            claimName: database-persistent-volume-claim
+      containers:
+        - name: postgres
+          image: postgres
+          ports:
+            - containerPort: 5432
+          # подключаем полученное в запросе место контейнеру на указанный путь
+          # в данном случае это путь хранения базы постгресом
+          volumeMounts:
+            - name: postgres-storage
+              # какой путь контейнера
+              mountPath: /var/lib/postgresql/data
+              # и по какому пути хранилища будем держать
+              # (без этого параметра некоторые контейнеры работать отказывются, включая postgres)
+              subPath: postgres
+          env:
+            # Переменная из докуменатции на dockerhub, задающая пароль базе
+            - name: POSTGRES_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: pgpassword
+                  key: POSTGRES_PASSWORD

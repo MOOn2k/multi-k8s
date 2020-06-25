@@ -1,0 +1,13 @@
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: database-persistent-volume-claim
+spec:
+  accessModes:
+    # только один под сможет читать и писать в запрошенную область
+    - ReadWriteOnce
+  resources:
+    requests:
+      storage: 2Gi
+    # где будет выделено место (пользуемся дефолтовым вариантом)
+    # storageClassName: standart
