@@ -1,0 +1,33 @@
+# выполнять эти команды как sudo ?
+sudo: required
+# какие с ервисы должны быть предустановлены для выполненяи команды ниже ?
+services:
+  - docker
+
+before_install:
+  # Travis gem
+  # 2.2. ркзультат п 2.1. с инструкциями по расшифровке service-account.json
+  - openssl aes-256-cbc -K $encrypted_9f3b5599b056_key -iv $encrypted_9f3b5599b056_iv -in service-account.json.enc -out service-account.json -d
+  # Google cloud sdk
+  # 1.1. установка
+  # - получаем с урла текст скрипта установки "curl https://sdk.cloud.google.com"
+  # - используя пайп говорим чтобы с выводом этой команды, т.е. скриптом, запустился bash "| bash"
+  # - далее через символ "> /dev/null" говорим чтобы весь вывод свой тот писал в пустоту
+  # PS: установка в оф документации отличсается доп флагом и отсуствием "> /dev/null"
+  # https://cloud.google.com/sdk/docs/downloads-interactive#silent
+  - curl https://sdk.cloud.google.com | bash > /dev/null
+  # 1.2. инициализация
+  # очередное выполнения скрипта из места установки
+  # PS: оф документация вместо этого делает gcloud init
+  # https://cloud.google.com/sdk/docs/initializing
+  - source $HOME/google-cloud-sdk/path.bash.inc
+  # Travis gem
+  # 2.1. установка
+  # - через IAM Google Cloud добавлем 'service account' с правами админа k8s и качаем для него ключ в json
+  # - ставим travis gem
+  # - travis login --com (через github)
+  # - travis encrypt-file service-account.json -r MOOn2k/multi-k8s --com
+  # PS: проще сделать через кеонтейнер docker run -it -v "$(pwd):/app" ruby:2.4 sh
+  # 2.3. с его помощью выполняем авторизацию Google Cloud
+  # PS: почему нет .enc на конце ? потмоу что в п. 2.2. он уже расшифрован и лежит в корне
+  - gcloud auth activate-service-account --key-file service-account.json
