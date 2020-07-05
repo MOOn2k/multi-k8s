@@ -93,3 +93,43 @@ LoadBalancer гугла.
 умеет работать с ними.
 
 Запускается IngressController так https://kubernetes.github.io/ingress-nginx/deploy/#minikube (strandart usage)
+> minikube addons enable ingres
+Результатом будет ingress-nginx, а не kubernetes-ingress
+
+HEML (3)
+---
+Менеджер пакетов (чартов) в рамках кластера K8s. Позволяет поставить тот же Kubernetes-ingress
+Сайт: https://helm.sh
+Установка:
+> curl -fsSL -o get_helm.sh https://raw.githubusercontent.com/helm/helm/master/scripts/get-helm-3
+> chmod 700 get_helm.sh
+> ./get_helm.sh
+Установка пакета :
+> helm repo add stable https://kubernetes-charts.storage.googleapis.com/
+> helm install my-nginx stable/nginx-ingress --set rbac.create=true
+PS: Все через шелл хостера
+
+RBAC
+---
+Role Based Access Control. Система для предоставления прав на изменение объектов в кластере K8s. Включена на
+Google cloud по дефолту. На minikube отключена.
+Аккаунты могут быть двух типов:
+Service Account - аккаунт пода в кластере, который будет им управлять.
+User Account - аккаунт пользователя в кластере, который будет им управлять.
+Роли бывают двух типов:
+ClusterRoleBinding - роль в рамках кластера.
+RoleBinding - роль в рамках объекта неймспейса кластера.
+
+Ниже примере по работе с RBAC на примере Helm 1/2, в которых приложение делилось на две составляющие: сервер живущий в
+поде кластера Till и вносящий в него изменений, а так же сам клиент Helm, который этому серверу должен был задачи по
+изменению кластера ставить.
+Так вот. Till должен иметь Service Account, чтобы вносить изменения. Настраиваем:
+
+1. Создаем Service Account с именем tiller (не понял почему именно kube-system выбран namespace'ом)
+> kubectl create serviceaccount --namespace kube-system tiller
+2. Создаем правило ClusterRoleBinding с именем tiller-cluster-rule и назначаем этому правилу роль cluster-admin,
+привязываем ее к Service Account
+> kubectl create clusterrolebinding tiller-cluster-rule --clusterrole=cluster-admin --serviceaccount=kube-system:tiller
+Теперь мы можем сделать init Helm'а:
+> helm init --service-account=tiller --upgrage
+PS: Все через шелл хостера или куда оно там ставится
