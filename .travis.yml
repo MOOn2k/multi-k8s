@@ -6,7 +6,7 @@ services:
 env:
   global:
     # Записываем id последнего коммита в используемой версии чтобы использовать его в качестве тега для билда докера
-    - SHA = $(git rev-parse HEAD)
+    - SHA=$(git rev-parse HEAD)
     # Будет подхвачена gcloud и использована для отключения интерфейсов ввода в процессе работы
     - CLOUDSDK_CORE_DISABLE_PROMPTS=1
 before_install:
@@ -21,6 +21,8 @@ before_install:
   # PS: установка в оф документации отличсается доп флагом и отсуствием "> /dev/null"
   # https://cloud.google.com/sdk/docs/downloads-interactive#silent
   - curl https://sdk.cloud.google.com | bash > /dev/null
+  # 1.1.1. обновляем в нем kubectl, на всякий случай
+  - gcloud components update kubectl
   # 1.2. инициализация
   # очередное выполнения скрипта из места установки
   # PS: оф документация вместо этого делает gcloud init
