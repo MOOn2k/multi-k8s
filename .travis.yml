@@ -65,19 +65,3 @@ deploy:
   # выполняем только для ветки master
   on:
     branch: master
-
-
-
-
-
-
-
-
-
-
-
-before_install:
-  # Собираем имейджи
-  - docker build -t moon2k/complex-client ./client
-  - docker build -t moon2k/complex-server ./server
-  - docker build -t moon2k/complex-worker ./worker
