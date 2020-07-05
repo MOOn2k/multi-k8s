@@ -20,14 +20,14 @@ before_install:
   # - далее через символ "> /dev/null" говорим чтобы весь вывод свой тот писал в пустоту
   # PS: установка в оф документации отличсается доп флагом и отсуствием "> /dev/null"
   # https://cloud.google.com/sdk/docs/downloads-interactive#silent
-  - curl https://sdk.cloud.google.com | bash > /dev/null
-  # 1.1.1. обновляем в нем kubectl, на всякий случай
-  - gcloud components update kubectl
+  - curl https://sdk.cloud.google.com | bash > /dev/null;
   # 1.2. инициализация
   # очередное выполнения скрипта из места установки
   # PS: оф документация вместо этого делает gcloud init
   # https://cloud.google.com/sdk/docs/initializing
   - source $HOME/google-cloud-sdk/path.bash.inc
+  # 1.2.1. обновляем в нем kubectl, на всякий случай
+  - gcloud components update kubectl
   # 1.3. Travis gem - генерация зашифрованного ключа для Google Cloud
   # 1.3.1. установка
   # - через IAM Google Cloud добавлем 'service account' с правами админа k8s и качаем для него ключ в json
