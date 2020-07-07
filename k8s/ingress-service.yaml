@@ -41,4 +41,4 @@ spec:
     - hosts:
         - moon2k.ru
         - www.moon2k.ru
-    secretName: moon2k-ru
+      secretName: moon2k-ru
