@@ -153,3 +153,5 @@ kubectl apply --validate=false -f https://github.com/jetstack/cert-manager/relea
     --namespace cert-manager \
     --version v0.15.1
 Согласно документации создается два объекта: ClusterIssuer и Certificate и применяем их в кластере.
+Подождав какое то время мы получаем объект Secret с нашим сертификатом внутри, который можем использовать в Ingress.
+Вносим правки в объект Ingress, включающие поддержку полученного сертификата и снова размещаем на кластере.
