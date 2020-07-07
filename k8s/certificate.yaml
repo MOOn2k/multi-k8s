@@ -1,0 +1,20 @@
+# Описывает сертификат
+
+# Это не k8s это апи аддона cert-manager, потому такая запись
+apiVersion: cert-manager.io/v1alpha2
+# Подробнее о этом объекте тут: https://cert-manager.io/docs/tutorials/acme/http-validation/
+kind: Certificate
+metadata:
+  name: moon2k-ru-tls
+spec:
+  # Задаем мя полученному сертификату
+  secretName: moon2k-ru
+  # Ссылаемся на объект издателя
+  issuerRef:
+    name: letsencrypt-prod
+    kind: ClusterIssuer
+  # Домен на который будет распространяться действие сертификата
+  commonName: moon2k.ru
+  dnsNames:
+    - moon2k.ru
+    - www.moon2k.ru

@@ -1,0 +1,21 @@
+# Описывает издателя сертификата
+
+# Это не k8s это апи аддона cert-manager, потому такая запись
+apiVersion: cert-manager.io/v1alpha2
+kind: ClusterIssuer
+metadata:
+  name: letsencrypt-prod
+spec:
+  # Тип, как правило, бесплатного сертификата, принимаемого большинством браузеров
+  # https://cert-manager.io/docs/configuration/acme
+  acme:
+    # Адрес сервера апи издателя (letsencrypt в данном случае)
+    server: https://acme-v02.api.letsencrypt.org/directory
+    email: 'moon2k@bk.ru'
+    # ACME выдаст нам приватный ключ в процессе верификации и мы его под этим именем сохраним
+    privateKeySecretRef:
+      name: letsencrypt-prod
+    solvers:
+      - http01:
+          ingress:
+            class: nginx

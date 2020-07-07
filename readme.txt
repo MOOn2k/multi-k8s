@@ -133,3 +133,23 @@ RoleBinding - роль в рамках объекта неймспейса кл�
 Теперь мы можем сделать init Helm'а:
 > helm init --service-account=tiller --upgrage
 PS: Все через шелл хостера или куда оно там ставится
+
+ДОМЕН И HTTPS (tls)
+---
+По аналогии с контроллером 'ingress-nginx' в кластере так же могут быть развернуты и иные вспомогательные инструменты,
+такие как, например, 'cert manager' - контроллер, обеспечивающий автоматизацию получения/обновления и управление tls
+сертификатами из поддерживаемого перечня поставщиков.
+Сайт: https://cert-manager.io/
+Установка через Helm:
+вместо версии из туториала..
+> kubectl apply --validate=false -f https://raw.githubusercontent.com/jetstack/cert-manager/release-0.11/deploy/manifests/00-crds.yaml
+.. я буду ставить 0.15.1 согласно документации (CRDs для моего текущего кластера k8s < 1.15, а потому строчка такая)
+kubectl apply --validate=false -f https://github.com/jetstack/cert-manager/releases/download/v0.15.1/cert-manager-legacy.crds.yaml
+> kubectl create namespace cert-manager
+> helm repo add jetstack https://charts.jetstack.io
+> helm repo update
+> helm install \
+    cert-manager jetstack/cert-manager \
+    --namespace cert-manager \
+    --version v0.15.1
+Согласно документации создается два объекта: ClusterIssuer и Certificate и применяем их в кластере.
