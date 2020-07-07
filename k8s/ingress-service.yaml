@@ -2,11 +2,11 @@ x-common-rules: &common-rules
   paths:
     - path: /?(.*)
       backend:
-        serviceName: frontend-cluster-ip-service
+        serviceName: client-cluster-ip-service
         servicePort: 3000
     - path: /api/?(.*)
       backend:
-        serviceName: backend-cluster-ip-service
+        serviceName: server-cluster-ip-service
         servicePort: 8000
 
 apiVersion: extensions/v1beta1
