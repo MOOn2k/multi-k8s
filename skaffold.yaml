@@ -1,0 +1,52 @@
+apiVersion: skaffold/v2beta5
+kind: Config
+build:
+  local:
+    # Не надо загружать на докерхаб при имзенении
+    push: false
+  # Какие имейджи нужно отслеживать
+  artifacts:
+    - image: moon2k/complex-client
+      context: client
+      docker:
+        dockerfile: Dockerfile.dev
+      # перечисляем за какими файлами надо следить для их подмены в контейнере
+      # PS: если будет изменено что то вне списка - произойдет билд
+      sync:
+        infer:
+          - '**/*.js'
+          - '**/*.css'
+          - '**/*.html'
+    - image: moon2k/complex-server
+      context: server
+      docker:
+        dockerfile: Dockerfile.dev
+      sync:
+        infer:
+          - '**/*.js'
+    - image: moon2k/complex-worker
+      context: worker
+      docker:
+        dockerfile: Dockerfile.dev
+      sync:
+        infer:
+          - '**/*.js'
+deploy:
+  kubectl:
+    manifests:
+      - k8s/postgres-deployment.yaml
+      - k8s/postgres-cluster-ip-service.yaml
+      - k8s/redis-deployment.yaml
+      - k8s/redis-cluster-ip-service.yaml
+      - k8s/worker-deployment.yaml
+      - k8s/server-deployment.yaml
+      - k8s/server-cluster-ip-service.yaml
+      - k8s/client-deployment.yaml
+      - k8s/client-cluster-ip-service.yaml
+      - k8s/ingress-service.yaml
+      # Надо понимать, что Postgres потребует Secret объект с паролем при запуске
+      # Надо понимать, что Postgres без PersistentVolumeClaim под базу потеряет изменения при перезапуске и добавление
+      # - k8s/database-persistent-volume-claim.yaml в список не поможет, тк хранилище удалится сразу после остановки
+      # Решения два:
+      # 1. Создавать объекты PersistentVolumeClaim и Secret императивно
+      # 2. Завести себе докер файл с постгрес и запускать его руками,передавая пароль и хранилище
